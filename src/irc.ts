@@ -73,6 +73,7 @@ export interface IrcClientOpts {
     bustRfc3484?: boolean;
     localAddress?: string|null;
     localPort?: number|null;
+    socket?: Socket|null;
     debug?: boolean;
     showErrors?: boolean;
     autoRejoin?: boolean;
@@ -115,6 +116,7 @@ interface IrcClientOptInternal extends IrcClientOpts {
     bustRfc3484: boolean;
     localAddress: string|null;
     localPort: number|null;
+    socket: Socket|null;
     debug: boolean;
     showErrors: boolean;
     autoRejoin: boolean;
@@ -261,6 +263,7 @@ export class Client extends EventEmitter {
             },
             ...opt,
             family: opt.family ? opt.family : 4,
+            socket: opt.socket ?? null,
         };
         this.nickMod = opt.nickMod ?? 0;
 
@@ -1170,6 +1173,7 @@ export class Client extends EventEmitter {
                 ...connectionOpts,
                 rejectUnauthorized: !this.opt.selfSigned,
             }
+            if (this.opt.socket) {secureOpts.socket = this.opt.socket;}
 
             if (typeof this.opt.secure === 'object') {
                 // copy "secure" opts to options passed to connect()
@@ -1213,6 +1217,10 @@ export class Client extends EventEmitter {
                 }
                 this._connectionHandler();
             });
+        }
+        else if (this.opt.socket) {
+            this.conn = this.opt.socket;
+            setImmediate(this._connectionHandler.bind(this));
         }
         else {
             this.conn = createConnection(connectionOpts, this._connectionHandler.bind(this));
