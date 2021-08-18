@@ -37,6 +37,7 @@ Client
             messageSplit: 512,
             encoding: '', 
             encodingFallback: null,
+            socket: null,
         }
 
     `secure` (SSL connection) can be a true value or an object (the kind of object
@@ -73,6 +74,8 @@ Client
     With `encodingFallback` you can choose what encoding to use for non-UTF-8 messages.
     Leave null for no fallback. Do not set `encoding` when using this as it assumes incoming
     messages are UTF-8 OR fallback encoding.
+
+    `socket` allows you to passing in an already opened socket to use instead of creating a new one.
 
     Setting `debug` to true will emit timestamped messages to the console
     using `util.log` when certain events are fired.
